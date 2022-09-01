@@ -4,19 +4,38 @@ import "./Signin.css";
 function SignIn() {
   const [nickname, setNickname] = useState("");
   const [id, setID] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmpassword, setConfirmPassword] = useState("");
-
+  /*
+  // 
+  const onClickSubmit = () => {
+    // fetch
+    // body에 loginId, loginPw, loginPwConfirm, email, nickname 넣어서 post
+    fetch('http://localhost:3000/join', {
+      method: 'POST', 
+      body: JSON.stringify({
+        nickname : nickname,
+        loginID: id,
+        email : email,
+        loginPw: password,
+        loginPwConfirm: confirmpassword
+      }),
+    }) //회원가입이 완료됐다는 메세지 띄우고 로그인 페이지로 이동
+    .then((response) => response.json())
+    .then(result => alert(result.message));
+  }
+*/
   return (
     <div className="container">
       <div className="container-login">
         <div className="wrap-login">
-          <form className="login-form">
+        <form className="login-form" action="/join" method="POST" onsubmit="DoJoinForm__submit(this); return false;">
             <span className="login-form-title"> 회원가입 </span>
             <div className="wrap-input">
               <input
                 className={nickname !== "" ? "has-val input" : "input"}
-                type="nickname"
+                type="text"
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
               />
@@ -25,16 +44,24 @@ function SignIn() {
             <div className="wrap-input">
               <input
                 className={id !== "" ? "has-val input" : "input"}
-                type="id"
+                type="text"
                 value={id}
                 onChange={(e) => setID(e.target.value)}
               />
               <span className="focus-input" data-placeholder="아이디"></span>
             </div>
-
             <div className="wrap-input">
               <input
-                className={password !== "" ? "has-val input" : "input"}
+                className={id !== "" ? "has-val input" : "input"}
+                type="text"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <span className="focus-input" data-placeholder="이메일"></span>
+            </div>
+            <div className="wrap-input">
+              <input
+                className={email !== "" ? "has-val input" : "input"}
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -45,7 +72,7 @@ function SignIn() {
             <div className="wrap-input">
               <input
                 className={confirmpassword !== "" ? "has-val input" : "input"}
-                type="confirmpassword"
+                type="password"
                 value={confirmpassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
@@ -53,7 +80,7 @@ function SignIn() {
             </div>
 
             <div className="container-login-form-btn">
-              <button className="login-form-btn">Sign in</button>
+              <button className="login-form-btn" type="submit">Submit</button> 
             </div>
           </form>
         </div>

@@ -20,7 +20,7 @@ export default function NavBar() {
             <a><Link to={'/Matching'}>MATCHING</Link></a>
           </li>
           <li>
-            <a id="login"><Link to={'/LogIn'}>LOGIN</Link></a>
+            <a id="login-btn"><Link to={'/LogIn'}>LOG IN</Link></a>
           </li>
         </ul>
         <i className="fas fa-bars burger" onClick={() => setOpen(!open)}></i>

@@ -48,12 +48,19 @@
     border-bottom: 1px solid white;
   }
 
-  nav .nav-links #login {
+  nav .nav-links #login-btn {
     font-size: 18px;
     cursor: pointer;
-    background: #268FE1;
+    color: white;
+    border-radius: 2px !important;
+    border: 1.5px solid white;
+    padding: 6px;
   }
-
+  
+  #login-btn:hover {
+    background: gray;
+  }
+  
   nav .burger {
     font-size: 30px;
     display: none;
