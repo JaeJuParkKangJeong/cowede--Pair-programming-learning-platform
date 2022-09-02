@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import "./Mypage.css";
 
 function Mypage() {
+  //let requestRsponse = fetch(url, [params]);
+
   return (
     <div className="container">
       <div className="container-mypage">
@@ -9,17 +11,12 @@ function Mypage() {
           <div className="mypage">
             <span className="mypage-title"> 내정보 </span>
             <div className="wrap-info">
-              <input
-                className={id !== "" ? "has-val input" : "input"}
-                type="id"
-                value={id}
-                onChange={(e) => setID(e.target.value)}
-              />
-              <span className="focus-input" data-placeholder="아이디"></span>
+              <p className="input"> 너는</p>
+              <span className="focus-input">뭘까 </span>
             </div>
-
+            
             <div className="text-center">
-              <span className="txt1">회원이 아니신가요? </span>
+              <span className="txt1">넌 뭔데 </span>
             </div>
           </div>
         </div>
@@ -28,3 +25,24 @@ function Mypage() {
   );
 }
 export default Mypage;
+
+/*
+<!-- <%= userSession.user_id %> 님의 -->
+
+            <div>
+              <script>
+                async function funcRequest(url){
+                  await fetch(url)
+                  .then((response) => {
+                    return response.json(); // data into json
+                  }).then((data) => {
+                    // Here we can use the response Data
+                  }).catch(function(error) {
+                    console.log(error);
+                  })
+                }
+                const url = 'URL of file';
+                funcRequest(url);
+              </script>
+            </div>
+*/

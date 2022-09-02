@@ -39,9 +39,16 @@ function LogIn() {
 
             <div className="text-center">
               <span className="txt1">회원이 아니신가요? </span>
-              <a className="txt2">
-                <Link to={"/SignIn"}>회원가입</Link>
-              </a>
+              <Link to={"/SignIn"} className="txt2">
+                <p>회원가입</p>
+              </Link>
+            </div>
+
+            <div className="text-center">
+              <span className="txt1">마이페이지 테스트 </span>
+              <Link to={"/Mypage"} className="txt2">
+                <p>마이페이지</p>
+              </Link>
             </div>
           </form>
         </div>

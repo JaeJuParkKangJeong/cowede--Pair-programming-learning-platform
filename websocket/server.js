@@ -168,184 +168,229 @@ app.post("/join", async function register(req, res) {
 ////////////////////////
 ///////여기까지_회원가입_end///////////
 ////////////////////////
+
 ////////////////////////
 ///////여기부터_로그인///////////
 ////////////////////////
 
-//로그인 -> 서버는 쿠키(브라우저에 긴 문자열을 저장할수있는 공간)에 저장할 수 있는 문자열을 프론트에 보냄
-//프론트에 보내는 쿠키에는 세션아이디가 적혀있음
-//로그인 요청 -> front에서 입력한 비번 암호화 -> 비교후 boolean 값 리턴
-// -> true일때 토큰 생성 ->토큰을 세션및 DB에 저장
+//passport다루기 절차
+/**
+ * 1, 모듈 로딩과 초기화
+ * 2.strategy 설정
+ * 3.인증 (요청)
+ * 4.세션 기록과 읽기
+ * 5.세션에서 사용자 정보 읽어오기
+ */
 
-//라이브러리 설정 -> 사용 middleware 작성 
-//npm install --legacy-peer-deps passport passport-local express-session
+
+app.get('/login', (req,res)=>{
+  res.sendFile(__dirname + '/src/react-project/pages/LogIn.js');
+})
+
+
+////////1. 모듈 로딩, 초기화//////////
+////////////////////////////////////
+
+//로딩
 const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
+const { read } = require("fs");
+const LocalStrategy = require('passport-local').Strategy;
 
-app.use(session({secret: '비밀코드', resave: true, saveUninitialized: false}));
+//초기화
+//세션 미들웨어
+app.use(session({       
+    secret: 'cowede@1234',
+    resave: false,              
+    saveUninitialized: true}));
 app.use(passport.initialize());
 app.use(passport.session());
 
-/*
-//로그인 페이지 접속
-app.get('/login', (req,res)=>{
-  res.sendFile(__dirname + '/src/pages/Login.js');
-})
-*/
 
-app.post('/login', passport.authenticate('local',{
-  
-  //로그인 실패시 'fail'경로로 get요청 보내줘
-  failureRedirect: '/fail'
-}) ,(req, res)=>{
-      
-      var login_id = req.body.user_id;
-      var login_pw = req.body.user_pw;
-      
-      if(req.session.user){
-          console.log('이미 로그인 상태입니다');
-          res.redirect('/fail');
-      }
-      
-      else{
-          req.session.user = {
-              id: login_id,
-              pw: login_pw,
-              authorized: true
-          };
-          res.redirect('/');
-      }
-  });
-  
-//로그인 실패시 실행할 api
-app.get('/fail', (req,res)=>{  
-  //여기에 로그인 실패시 실행할(띄어줄 .html) 작성
-  res.send('로그인 실패~');
-})
+////////3. 인증(요청)//////////////////
+////////////////////////////////////
+//passport 모듈의 'local'인증기능 사용(passport.authenticate함수 사용해서)
+//인증성공 -> 성공메세지 + 성공 페이지 이동(홈페이지로)
+//인증실패 -> 실패메세지 + 로그인 페이지로 이동
+//유저가 로그인 정보 입력 -> passport가 인증 실시하는 코드
+app.post('/login', 
 
+  passport.authenticate('local',{
+    
+    //OPTION설정
+    failureRedirect: '/fail',
+    successRedirect:  '/Home'  //홈페이지로 바꿀예정
 
-passport.use(new LocalStrategy({
-  
-  // login.html에서 사용자가 제출한 아이디가 어떤 <input>인지 <input>의 name 속성값
-  usernameField: 'id',
-  passwordField: 'pw',
-  session: true,      //로그인 후 세션 저장
-  passReqToCallback: false,   
-}, (input_id, input_pw, done)=>{
-  console.log(input_id, input_pw);        
-  
-  //디비에 저장된 아이디 비번과 대조해보기
-  Users.findOne({user_id: input_id}, (err, user)=>{
-      //걍 에러다~~
-      //done(서버에러, 성공시 뱉어낼 사용자DB, 에러메세지)
-      if(err) return done(err)
-      
-      //result == null -> 일치하는 user_id가 없는거임
-      if(!user) return done(null, false, {message: '존재하지 않는 아이디입니다~ㅠㅠ'})
-      
-      //아이디 동일하니깐 이젠 비번 확인해야지 
-      //front에서 입력한 비번 암호 <-> 위에서 findOne으로 찾아낸 화원정보의 암호화 된 비밀번호(result.pw)와 비교
-      //비교하고 -> 
-      user.comparePassword(input_pw, user.user_pw, (err, isMatch) => {
-        //isMatch가 false이면~ -> 실패리턴
-        if(!isMatch) return done(null, false, {message: '비밀번호가 틀렸어요~ㅠㅠ'})
-        else{
-          console.log("보내는거?");
-          console.log(user);
-          console.log("보낸거??");
-          
-          return done(null, user);
-        }
-      })
+  }));
+
+  app.get('/fail', (req,res)=>{  
+    //여기에 로그인 실패시 실행할(띄어줄 .html) 작성
+    //console.log(res.message)
+    res.redirect('/login');
+    // console.log(req.body);
+    console.log('로그인 실패~');
+
   })
-}));
 
-//로그인 -> 세션 정보 만듦(로그인 유지)
-//유저의 정보를 저장(씨리얼라이즈 해서)
-//로그인 성공시 발동
-//사용자 정보 객체를 session에 아이디로 저장!(쿠키 안에 세션 아이디가 있음)
+
+//로그인 성공시 세션 확인 코드
+app.get('/Home', (req, res)=>{
+  res.json({userSession: req.user});
+})
+
+
+////////2. strategy 인증 설정//////////
+////////////////////////////////////
+//local 인증 구현(사용자가 입력한 아이디/비번을 받아서 인증기능 구현)
+ passport.use(new LocalStrategy(
+  {
+    // login.html에서 사용자가 제출한 아이디가 어떤 <input>인지 <input>의 name 속성값  
+    usernameField: 'id',
+    passwordField: 'pw',
+    session: true,          //로그인 후 세션 저장
+    passReqToCallback: false,
+  }, 
+  
+  (input_id, input_pw, done)=>{
+    //그냥 확인 
+    console.log('LocalStrategy', input_id, input_pw);        
+    
+    //디비에 저장된 아이디 비번과 대조해보기
+    Users.findOne({user_id: input_id}, (err, user)=>{
+
+        //done(서버에러, 성공시 뱉어낼 사용자DB, 에러메세지)
+        if(err) return done(err)
+        
+        if(!user){
+            //인증실패
+            return done(null, false, {message: '존재하지 않는 아이디입니다~ㅠㅠ'})
+        }
+
+        user.comparePassword(input_pw, user.user_pw, (err, isMatch) => {  
+          if(!isMatch) { 
+            //인증실패
+            return done(null, false, {message: '비밀번호가 틀렸어요~ㅠㅠ'})
+        }
+          
+        else{
+            console.log("보내는거?");
+            console.log(user);
+            console.log("보낸거??");
+            
+            //이게 req.session.userinfo 이렇게 세션에 박아질듯?
+            const userInfo = {
+                is_logined : true,
+                user_id: user.user_id,
+                user_nickname: user.user_nickName,
+            }
+
+            //인증성공 -> 사용자 정보를(내가 위에서 findOne으로 해당 사용자 document 찾았으니깐
+            //여기에서 사용자 document 하나가 세션에 저장되고 넘어감) passpaort의 done 콜백함수로 전달됨
+            return done(null, userInfo);
+          }
+        })
+    })
+  }));
+
+
+
+////////4. 세션 기록괴 읽기//////////////
+////////////////////////////////////
+
+//로그인시 입력하는 사용자 정보 -> 세션으로 저장되어야 한다
+//로그인 성공 ->passport.authenticate함수에서 userInfo data를 
+//serializeUser 메소드에 인자로 전달된 콜백 함수의 첫번째 인자로 주입해주도록 약속됨
+//serializeUser 메소드에 인자로 전달된 콜백 함수가 호출되도록 약속됨
+//passport.authenticate
+//로그인 성공시에 한번 실행 -> 세션스토어에 이미 있는 세션에? 사용자의 식별자가(여기선 userInfo) 저장
 passport.serializeUser((user, done)=>{
-    //console.log("로그인 실행하면 여기로 넘어오나?");
-    done(null, user);      //user.user_id로 세션을 만듦(쿠기로 보냄 ) -> 해당 세션으로 마이페이지 접근 가능
-  });
- 
 
-//마이페이지 접속시 사용
-//session data 찾기
-//로그인 한 유저의 개인정보를 DB에서 찾는 역할
-//session에 저장한 아이디를 통해서 사용자 정보 객체를 불러옴
-passport.deserializeUser((user, done)=>{
-  //console.log("마이페이지 접속하면 여기로 넘어오나?");
-  //디비에서 위에 있는 user.id로 유저를 찾은 뒤에 유저 정보를 result에 넣음 
-  //mypage 접속시 DB에서 {user_id: id}인 도큐먼트 하나 찾아서 그 결과 보내줌
-  Users.findOne({user_id: user.user_id}, (err, result)=>{
+    console.log('ser', user)
+    
+    //session data 안에 passport의 user값으로 사용자의 식별자가(userInfo) 들어옴
+    done(null, user.user_id); 
+  });
+
+
+ //로그인 이후 페이지 방문때마다 deserializeUser함수의 콜백((id, done))이 호출되도록 약속되오있다
+ //콜백이 호출될때마다 
+ //세션에서 읽어온 데이터 == req.user
+ //페이지 방문때마다 세션 스토어에 있는 식별자를 가져와서 -> 실제 데이터 DB에서 꺼내서 주기 
+ passport.deserializeUser((id, done)=>{
+  console.log('dser', id)
+  
+  Users.findOne({user_id: id}, (err, result)=>{
+    console.log('dser', result);
+    
+    //deserial 함수의 콜백 함수가 호출될 때 두번째 인자로 전달된 result가 req.user로 저장되도록 약속되어있다.
     done(null, result);
   });
 });
 
+/////////////////////////////////////
+////////로그인_end///////////////////////
+////////////////////////////////////
 
-////////////////////////
-///////여기까지_로그인_end///////////
-////////////////////////
-
-
-////////////////////////
-///////여기부터_마이페이지///////////
-////////////////////////
-
-//마이페이지 버튼 클릭 -> '/mypage'로 get요청 -> 프론트로 로그인 한 유저 정보(도큐먼츠) 전송
-app.get('/mypage', check_login, (req, res) => {
-  res.json({userSession: req.user});
-  //res.render("mypage.ejs", {userSession: req.user});
-  //res.sendFile(__dirname + "/public/mypage.html");
-})
-
-//로그인 여부 확인 함수
-function check_login (req, res, next){
-  if(req.user){
-    next();
-  }
-  else{
-    res.send("로그인 하세요");
-  }
-}
-
-////////////////////////
-///////여기부터_마이페이지_end///////////
-////////////////////////
-
-
-
-////////////////////////
-///////여기부터_로그아웃///////////
-////////////////////////
-
-//로그아웃 버튼 클릭 -> '/logout'경로로 get요청 
+///////////////////////////////////
+////////로그아웃///////////////////////
+////////////////////////////////////
 app.get('/logout',
 
 async (req, res, next)=>{
-  if(req.session.user != undefined){
-    await console.log("_id: " + req.user.id + " 님 로그아웃"); 
- 
+  await console.log("뭐냐? 로그아웃");
+  await console.log(req.user);
+
+  if(req.user != undefined){
+    await console.log("_id: " + req.user.user_id + " 님 로그아웃");
+    
     await req.logOut((err=>{
       if(err) return next(err);    
-    }));
+    })); 
     
     await req.session.save(()=>{
-      res.redirect('/');
-    });
+        res.redirect('/');
+      });
   }
+
   else {
+    console.log(res.user);
     console.log('로그인 상태가 아닙니다');
     res.redirect('/login');
   }
 });
-  
+////////////////////////////////////
+////////로그아웃_end///////////////////////
+////////////////////////////////////
 
-////////////////////////
-///////여기까지_로그아웃_end///////////
-////////////////////////
+/////////////////////////////////////
+////////마이페이지///////////////////////
+////////////////////////////////////
+app.get('/mypage', isAuthenticated, (req, res) => {
+    
+    res.json({userSession: req.user});
+  })
+
+  function isAuthenticated (req, res, next){
+    console.log("뭐냐? 마이페이지");
+    console.log(req.user)
+    if(req.user != undefined){
+        next();
+      }
+      else{
+        res.send("로그인 하세요");
+      }
+    }
+
+/////////////////////////////////////
+////////마이페이지_end///////////////////////
+////////////////////////////////////
+
+/**
+ * main에서 가져오기 
+ * 수정하기전에 브런치 만들기 -> 바로 바꾸기
+ * 
+ * 
+ */
 
 let roomIndex = 1;
 let rooms = []; //방정보들 저장

@@ -1,9 +1,13 @@
 const { default: mongoose } = require("mongoose");
 const Mongoose = require("mongoose");
 var autoIncrement = require("mongoose-auto-increment");
-const dbUrl =
-  "mongodb+srv://cowede:cowede12345@cavo.avwd3gl.mongodb.net/cavo?retryWrites=true&w=majority";
-var connection = mongoose.createConnection(dbUrl);
+const dbUrl =  
+    "mongodb+srv://cowede:cowede12345@cavo.avwd3gl.mongodb.net/cavo?retryWrites=true&w=majority";
+var connection = mongoose.createConnection(dbUrl,
+    {   dbName: "pairPrograming_new_edit_2",
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      });
 
 //mongoose-auto-increment initialize
 autoIncrement.initialize(connection);
@@ -70,17 +74,28 @@ userSchema.plugin(autoIncrement.plugin, "users");
 
 //??이건뭐지? -> _id 값 초기화 위함(Collection이 비어있을때 초기화,,)
 var Users = connection.model("users", userSchema);
-var users = new Users();
+// var users = new Users();
 
-users.save(function (err) {
-  users._id === 0;
-  users.nextCount((err, count) => {
-    count === 1;
-    users.resetCount(function (err, nextCount) {
-      nextCount === 0;
+// users.save(function (err) {
+//   users._id === 0;
+//   users.nextCount((err, count) => {
+//     count === 1;
+//     users.resetCount(function (err, nextCount) {
+//       nextCount === 0;
+//     });
+//   });
+// });
+
+//암호화 모듈 사용
+const bcrypt = require('bcrypt');
+
+//comparePassword 메소드 작성 
+userSchema.methods.comparePassword = (plainPassword, encryptPw, cb) => {
+    bcrypt.compare(plainPassword, encryptPw, (err, isMatch) =>{
+        if(err) return cb(err)  //그냥 애러
+        cb(null, isMatch);      //isMatch가 false이면 에러메세지 출력~
     });
-  });
-});
+}
 
 //users라는 이름의 coolection생성
 module.exports = mongoose.model("users", userSchema);

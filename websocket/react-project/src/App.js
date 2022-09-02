@@ -5,6 +5,7 @@ import Matching from './pages/Matching';
 import Guide from './pages/Guide';
 import SignIn from './pages/SignIn';
 import LogIn from './pages/LogIn';
+import Mypage from './pages/Mypage';
 import Navbar from './components/Navbar';
 
 /*
@@ -25,6 +26,7 @@ function App() {
         <Route path='/Guide' element={<Guide/>}/>
         <Route path='/SignIn' element={<SignIn/>}/>
         <Route path='/LogIn' element={<LogIn/>}/>
+        <Route path='/Mypage' element={<Mypage/>}/>
       </Routes>
     </div>
   );
