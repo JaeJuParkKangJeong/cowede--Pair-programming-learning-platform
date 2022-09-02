@@ -39,7 +39,7 @@ mongoose.connect(
 app.use(express.json()); // JSON 형태의 request body 받았을 경우 파싱
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, 'react-project/build')));
 
 //app.use("/test", idePageRouter);
 
@@ -66,12 +66,11 @@ const Users = require("./models/userModel");
 //user_counter Collection에 Document 하나 생성 -> 이미 생성해서 주석처리
 //new user_counter().save();
 
-/*
 // '/signUp'경로로 get요청 -> 화원가입 페이지(registerForm.html) 뜨게하기
-app.get("/LogIn", function (req, res) {
-  res.sendFile(__dirname + "/");
+app.get("/", function (req, res) {
+  res.sendFile(path.join(__dirname, '/react-project/build/index.html'));
 });
-*/
+
 // '/join'으로 post요청하면 -> 계정생성 -> DB에(users Collection에)저장
 app.post("/join", async function register(req, res) {
   //form으로 입력받은거 사용 위해 변수 선언해서 저장
@@ -182,10 +181,10 @@ app.post("/join", async function register(req, res) {
  * 5.세션에서 사용자 정보 읽어오기
  */
 
-
-app.get('/login', (req,res)=>{
-  res.sendFile(__dirname + '/src/react-project/pages/LogIn.js');
-})
+//원래 로그인 sendfile임
+//app.get('/', (req,res)=>{
+//  res.
+//})
 
 
 ////////1. 모듈 로딩, 초기화//////////
@@ -226,7 +225,7 @@ app.post('/login',
   app.get('/fail', (req,res)=>{  
     //여기에 로그인 실패시 실행할(띄어줄 .html) 작성
     //console.log(res.message)
-    res.redirect('/login');
+    res.redirect('/LogIn');
     // console.log(req.body);
     console.log('로그인 실패~');
 
@@ -649,3 +648,7 @@ app.io.on("connection", (socket) => {
 });
 
 module.exports = app;
+
+app.get('*', function (요청, 응답) {
+  응답.sendFile(path.join(__dirname, '/react-project/build/index.html'));
+});

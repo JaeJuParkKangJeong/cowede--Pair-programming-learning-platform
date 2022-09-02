@@ -5,12 +5,23 @@ import "./Login.css";
 function LogIn() {
   const [id, setID] = useState("");
   const [password, setPassword] = useState("");
- 
+
+  const submitHandler = (e) => {
+    fetch('http://localhost:3000/login', {
+      method: 'POST', 
+      body: JSON.stringify({
+        loginID: id,
+        loginPw: password,
+      }),
+    }) //회원가입이 완료됐다는 메세지 띄우고 로그인 페이지로 이동
+    .then((response) => response.json())
+    .then(result => alert(result.message));
+  };
   return (
     <div className="container">
       <div className="container-login">
         <div className="wrap-login">
-          <form className="login-form" action="/login" method="POST"> 
+          <form className="login-form" onSubmit={submitHandler}> 
             <span className="login-form-title"> 로그인 </span>
             
             <div className="wrap-input">
@@ -34,7 +45,7 @@ function LogIn() {
             </div>
 
             <div className="container-login-form-btn">
-              <button className="login-form-btn" type="submit">Log In</button> 
+              <button className="login-form-btn" type="submit" >Log In</button> 
             </div>
 
             <div className="text-center">

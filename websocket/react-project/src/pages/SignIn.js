@@ -7,8 +7,7 @@ function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmpassword, setConfirmPassword] = useState("");
-  /*
-  // 
+
   const onClickSubmit = () => {
     // fetch
     // body에 loginId, loginPw, loginPwConfirm, email, nickname 넣어서 post
@@ -25,12 +24,12 @@ function SignIn() {
     .then((response) => response.json())
     .then(result => alert(result.message));
   }
-*/
+
   return (
     <div className="container">
       <div className="container-login">
         <div className="wrap-login">
-        <form className="login-form" action="/join" method="POST" onsubmit="DoJoinForm__submit(this); return false;">
+        <form className="login-form">
             <span className="login-form-title"> 회원가입 </span>
             <div className="wrap-input">
               <input
@@ -80,7 +79,7 @@ function SignIn() {
             </div>
 
             <div className="container-login-form-btn">
-              <button className="login-form-btn" type="submit">Submit</button> 
+              <button className="login-form-btn" type="submit" onClick={onClickSubmit}>Submit</button> 
             </div>
           </form>
         </div>
