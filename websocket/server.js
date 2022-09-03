@@ -74,6 +74,9 @@ app.get("/", function (req, res) {
 // '/join'으로 post요청하면 -> 계정생성 -> DB에(users Collection에)저장
 app.post("/join", async function register(req, res) {
   //form으로 입력받은거 사용 위해 변수 선언해서 저장
+  console.log(req.body)
+  console.log(req.body.loginId)
+  
   const input_nickname = req.body.nickname;
   const input_id = req.body.loginId;
   const input_email = req.body.email;
