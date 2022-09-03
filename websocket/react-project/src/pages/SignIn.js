@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Signin.css";
 
 function SignIn() {
@@ -8,13 +9,16 @@ function SignIn() {
   const [password, setPassword] = useState("");
   const [confirmpassword, setConfirmPassword] = useState("");
 
+  const navigate = useNavigate();
+
   console.log(nickname);
   console.log(id);
   console.log(email);
   console.log(password);
   console.log(confirmpassword);
   
-  const onClickSubmit = (e) => {
+  const onClickSubmit = () => {
+    
     const requestOptions = {
       // 데이터 통신의 방법과 보낼 데이터의 종류, 데이터를 설정합니다.
       method: "POST", // POST는 서버로 요청을 보내서 응답을 받고, GET은 서버로부터 응답만 받습니다.
@@ -32,10 +36,25 @@ function SignIn() {
     };
     console.log(requestOptions);
     fetch("http://localhost:3000/join", requestOptions)
-      .then((res) => res.json()) // Result를 JSON으로 받습니다.
-      .then((res) => {
-        console.log(res); // 결과를 console창에 표시합니다.
-      });
+    .then((res) => res.json()) // Result를 JSON으로 받습니다.
+    .then((res) => {
+      //받아온 데이터 처리하는곳
+      console.log("너냐고")  
+      console.log(res);
+      // 
+      //여기 밑에서 막힘
+      //console.log(res.errors[0].message);
+      // 처리해야될 남은 문제
+      // 이제 받아온 에러메세지가 400번 중 하나면 
+      // if문으로 걸러서 해당되는 메세지 출력하고
+      // 정상일때만 로그인화면으로 넘기기
+      if(res.signUp_check !== undefined){
+        navigate("/Login");
+      }
+      // console.log('_id: ', res); // 결과를 console창에 표시합니다.
+    });
+
+    // navigate("/Login", { state: { value: 1234 } });
   };
 
   return (

@@ -152,7 +152,6 @@ app.post("/join", async function register(req, res) {
     // res.redirect("/Home");
     res.json({signUp_check: new_user._id});
 
- 
 
   } catch (error) {
     //회원가입 안되면 user_counter Collectio Document의 seq_val_for_user_id --1
