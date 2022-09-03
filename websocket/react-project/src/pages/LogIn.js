@@ -7,6 +7,7 @@ function LogIn() {
   const [password, setPassword] = useState("");
 
   const submitHandler = (e) => {
+    
     fetch('http://localhost:3000/login', {
       method: 'POST', 
       body: JSON.stringify({
