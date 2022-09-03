@@ -24,7 +24,7 @@ function SignIn() {
       body: JSON.stringify({
         // 이 body에 해당하는 데이터를 서버가 받아서 처리합니다.
         nickname : nickname,
-        loginID: id,
+        loginId: id,
         email : email,
         loginPw: password,
         loginPwConfirm: confirmpassword

@@ -7,22 +7,30 @@ function LogIn() {
   const [password, setPassword] = useState("");
 
   const submitHandler = (e) => {
-    
-    fetch('http://localhost:3000/login', {
-      method: 'POST', 
+    const requestOptions = {
+      // 데이터 통신의 방법과 보낼 데이터의 종류, 데이터를 설정합니다.
+      method: "POST", // POST는 서버로 요청을 보내서 응답을 받고, GET은 서버로부터 응답만 받습니다.
+      headers: {
+        "Content-Type": "application/json",
+      }, // json형태의 데이터를 서버로 보냅니다.
       body: JSON.stringify({
-        loginID: id,
+        // 이 body에 해당하는 데이터를 서버가 받아서 처리합니다.
+        loginId: id,
         loginPw: password,
       }),
-    }) //회원가입이 완료됐다는 메세지 띄우고 로그인 페이지로 이동
-    .then((response) => response.json())
-    .then(result => alert(result.message));
+    };
+    console.log(requestOptions);
+    fetch("http://localhost:3000/login", requestOptions)
+      .then((res) => res.json()) // Result를 JSON으로 받습니다.
+      .then((res) => {
+        console.log(res); // 결과를 console창에 표시합니다.
+      });
   };
   return (
     <div className="container">
       <div className="container-login">
         <div className="wrap-login">
-          <form className="login-form" onSubmit={submitHandler}> 
+          <form className="login-form"> 
             <span className="login-form-title"> 로그인 </span>
             
             <div className="wrap-input">
@@ -46,7 +54,7 @@ function LogIn() {
             </div>
 
             <div className="container-login-form-btn">
-              <button className="login-form-btn" type="submit" >Log In</button> 
+              <button className="login-form-btn" type="submit" onSubmit={submitHandler} >Log In</button> 
             </div>
 
             <div className="text-center">

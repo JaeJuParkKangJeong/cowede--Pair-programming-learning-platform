@@ -67,16 +67,16 @@ const Users = require("./models/userModel");
 //new user_counter().save();
 
 // '/signUp'경로로 get요청 -> 화원가입 페이지(registerForm.html) 뜨게하기
-app.get("/", function (req, res) {
-  res.sendFile(path.join(__dirname, '/react-project/build/index.html'));
-});
+// app.get("/", function (req, res) {
+//   res.sendFile(path.join(__dirname, '/react-project/build/index.html'));
+// });
 
 // '/join'으로 post요청하면 -> 계정생성 -> DB에(users Collection에)저장
 app.post("/join", async function register(req, res) {
   //form으로 입력받은거 사용 위해 변수 선언해서 저장
   console.log(req.body)
   console.log(req.body.loginId)
-  
+
   const input_nickname = req.body.nickname;
   const input_id = req.body.loginId;
   const input_email = req.body.email;
@@ -143,23 +143,17 @@ app.post("/join", async function register(req, res) {
 
     //users Collection에 새로운 계정 Document 저장 -> 홈페이지로 리다이렉트
     await new_user.save().then((res) => {
+      console.log('가입되냐');
       console.log(res);
       //res.redirect('/');
     });
 
     //홈 페이지로 리다이렉트(로그인 한 상태로??)
-    res.redirect("/");
-    //방금 저장한 계정 잘 저장되었는지 Document 찾아서 출력
-    //쿼리를 날릴때 서버랑 디비랑
-    // await Users.findOne({user_nickName: new_user.user_nickName}, (err, result)=>{       //Query was already executed: users.findOne({ user_nickName: 'asda' })
-    //     if(err){console.log(err);}
-    //     else{
-    //         console.log(result);
-    //         }
-    //     });
+    // res.redirect("/Home");
+    res.json({signUp_check: new_user._id});
 
-    //진짜 끄읕
-    //res.send("코위드 구성원이 된걸 환영합니다")
+ 
+
   } catch (error) {
     //회원가입 안되면 user_counter Collectio Document의 seq_val_for_user_id --1
     console.error(error.message); //여기에 뭐가 뜨는거지?
